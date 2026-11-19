@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitTrack — Gym Planner</title>
+<style>
+  :root{--ink:#20251f;--muted:#788078;--paper:#f7f7f1;--card:#fff;--green:#b9d7a8;--deep:#34513b;--line:#e6e9e1;--peach:#f4d7c7;--yellow:#f2e6b8;--shadow:0 12px 35px rgba(35,55,37,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:28px 22px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:28px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:var(--deep);color:white;display:grid;place-items:center}.logo svg{width:26px;height:26px}
+h1{font-size:22px;margin:0;letter-spacing:-.6px}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.header-actions{display:flex;gap:9px;align-items:center}.date-pill{background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:12px;font-size:13px;color:var(--muted)}
+.btn{border:0;border-radius:12px;padding:11px 16px;background:var(--deep);color:#fff;font-weight:650;font-size:13px}.btn.secondary{background:#fff;color:var(--deep);border:1px solid var(--line)}.btn.small{padding:8px 11px;font-size:12px}
+.hero{background:var(--deep);color:white;border-radius:23px;padding:28px 30px;display:flex;justify-content:space-between;align-items:center;gap:25px;position:relative;overflow:hidden;margin-bottom:20px}
+.hero:after{content:"";position:absolute;width:250px;height:250px;border:1px solid #ffffff20;border-radius:50%;right:7%;top:-130px;box-shadow:0 0 0 28px #ffffff09,0 0 0 58px #ffffff07}
+.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:10px;color:#c8dfbd;font-weight:700}.hero h2{font-size:clamp(25px,4vw,37px);margin:10px 0 8px;letter-spacing:-1.3px}.hero p{color:#d7e2d2;margin:0;font-size:13px;line-height:1.6}.hero .btn{background:#d9edcd;color:var(--deep);margin-top:18px}
+.hero-mark{font-size:85px;opacity:.9;z-index:1;margin-right:30px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.stat{padding:17px 18px}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.stat-icon{font-size:18px}.stat strong{display:block;font-size:27px;margin-top:9px;letter-spacing:-1px}.stat small{font-size:11px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.panel{padding:21px;margin-bottom:18px}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px;gap:10px}.panel h3{font-size:16px;margin:0;letter-spacing:-.3px}.hint{font-size:11px;color:var(--muted)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{border:1px solid var(--line);border-radius:12px;text-align:center;padding:11px 3px;background:#fff;min-height:78px}.day span{display:block;color:var(--muted);font-size:10px}.day b{display:block;margin:8px 0 5px;font-size:14px}.day i{display:block;width:5px;height:5px;border-radius:50%;background:var(--deep);margin:auto}.day.active{background:#eaf2e4;border-color:#c8dcbf}
+.workout-list{display:grid;gap:9px}.workout{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:13px}.workout-color{width:38px;height:38px;border-radius:11px;background:#e9f1e4;display:grid;place-items:center;font-size:18px}.workout-info{flex:1;min-width:0}.workout-info b{display:block;font-size:13px}.workout-info span{font-size:11px;color:var(--muted)}.workout-info select{border:1px solid var(--line);border-radius:6px;padding:2px 4px;background:#fcfcfa;color:var(--deep);font-size:11px}.tag{font-size:10px;padding:6px 8px;border-radius:20px;background:#f1f4ed;color:var(--deep);white-space:nowrap}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;margin:15px 0 7px}.bar{height:8px;border-radius:20px;background:#edf0e9;overflow:hidden}.bar span{display:block;height:100%;background:#8fb47e;border-radius:20px}
+.water{display:flex;gap:8px;margin-top:13px}.glass{flex:1;height:43px;border:1px solid #dce8ed;border-radius:9px;background:#f0f7f9;color:#75a7b9;font-size:18px}.glass.filled{background:#cfe8ef;border-color:#a9d2df}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;color:var(--muted);font-weight:650}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fcfcfa;color:var(--ink);outline:none}.field textarea{resize:vertical;min-height:70px}
+.exercise{display:grid;grid-template-columns:1.3fr .7fr .7fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.exercise:last-child{border:0}.exercise span{color:var(--muted)}.remove{border:0;background:#fff0ed;color:#b45a49;border-radius:8px;padding:6px 9px}
+.empty{text-align:center;color:var(--muted);font-size:12px;padding:22px 8px}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:12px}
+.day{width:100%;font:inherit;color:var(--ink);cursor:pointer}.day:hover,.day:focus-visible{border-color:#9bb990;outline:none}
+.goal-form{display:grid;gap:8px;margin-top:16px}.goal-form>label{font-size:12px;font-weight:650}.goal-form>div{display:flex;gap:8px}.goal-form input{width:90px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fcfcfa;color:var(--ink)}
+.day-dialog{width:min(520px,calc(100% - 28px));max-height:85vh;overflow:auto;border:1px solid var(--line);border-radius:18px;padding:21px;background:var(--card);color:var(--ink);box-shadow:var(--shadow)}.day-dialog::backdrop{background:rgba(22,31,23,.5)}.day-dialog .panel-head{margin-bottom:10px}
+.activity-section{border-top:1px solid var(--line);padding-top:13px;margin-top:13px}.activity-section h4{font-size:13px;margin:0 0 9px}.activity-section p,.activity-section li{font-size:12px;color:var(--muted);margin:7px 0}.activity-section ul{padding-left:18px;margin:0}.activity-workout{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.activity-workout:last-of-type{border-bottom:0}.activity-workout input{accent-color:var(--deep)}.activity-workout span{display:grid;gap:3px;flex:1}.activity-workout small,.activity-workout strong{font-size:11px;color:var(--muted)}.activity-hint,.activity-empty{font-size:11px!important}
+@media(max-width:780px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.hero-mark{font-size:58px;margin:0}.app{padding:20px 14px 40px}}
+@media(max-width:480px){header{align-items:flex-start;flex-direction:column}.header-actions{width:100%;justify-content:space-between}.hero{padding:23px 20px}.hero-mark{display:none}.week{gap:4px}.day{padding:9px 1px;min-height:70px}.day span{font-size:9px}.panel{padding:16px}.exercise{grid-template-columns:1fr .6fr .6fr auto;font-size:11px}}
+@page{margin:10mm}
+@media print{body{background:#fff}.app{max-width:none;padding:0}header{margin-bottom:14px}.btn,.header-actions,.remove{display:none!important}.stats{gap:8px;margin-bottom:12px}.stat{padding:10px 12px;box-shadow:none}.layout{display:block}.layout main,.layout aside{display:block}.panel{padding:14px;margin-bottom:10px;box-shadow:none;break-inside:avoid;page-break-inside:avoid}.hero{padding:16px 20px;margin-bottom:12px;print-color-adjust:exact;-webkit-print-color-adjust:exact}.day-dialog{display:none}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12v8M9 9v14M23 9v14M27 12v8M9 16h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h1>FitTrack <span style="font-weight:400;color:#849080">/ Gym Planner</span></h1><div class="sub">A little progress every day.</div></div></div>
+  <div class="header-actions"><div class="date-pill" id="todayDate"></div><button class="btn secondary" onclick="window.print()">↗ Print planner</button></div>
+</header>
+
+<section class="hero">
+ <div><div class="eyebrow">Your fitness journey starts here</div><h2>Stronger every<br>single day.</h2><p>Plan your workouts, build healthy habits<br>and celebrate every small win.</p><button class="btn" onclick="document.getElementById('addWorkout').scrollIntoView({behavior:'smooth'})">＋ Plan a workout</button></div>
+ <div class="hero-mark">✳</div>
+</section>
+
+<section class="stats">
+ <div class="stat"><div class="stat-top">Workouts this week <span class="stat-icon">🏋️</span></div><strong id="workoutCount">0</strong><small>Sessions planned</small></div>
+ <div class="stat"><div class="stat-top">Weekly goal <span class="stat-icon">🎯</span></div><strong id="goalCount">4</strong><small>Target sessions</small></div>
+ <div class="stat"><div class="stat-top">Water today <span class="stat-icon">💧</span></div><strong id="waterCount">0/8</strong><small>Glasses of water</small></div>
+ <div class="stat"><div class="stat-top">Current weight <span class="stat-icon">⚖️</span></div><strong id="weightDisplay">—</strong><small>Latest entry</small></div>
+</section>
+
+<div class="layout">
+ <main>
+  <section class="panel">
+   <div class="panel-head"><h3>This week's schedule</h3><span class="hint">Your weekly overview</span></div>
+   <div class="week" id="weekDays"></div>
+  </section>
+  <section class="panel">
+   <div class="panel-head"><h3>Upcoming workouts</h3><span class="hint">Your plan</span></div>
+   <div class="workout-list" id="workoutList"></div>
+  </section>
+  <section class="panel" id="addWorkout">
+   <div class="panel-head"><h3>Plan a workout</h3><span class="hint">Add a new session</span></div>
+   <form id="workoutForm" class="form-grid">
+    <div class="field"><label>Workout name</label><input id="wName" placeholder="e.g. Upper body" required></div>
+    <div class="field"><label>Day</label><select id="wDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select></div>
+    <div class="field"><label>Workout type</label><select id="wType"><option>Strength</option><option>Cardio</option><option>Flexibility</option><option>Core</option><option>Full body</option><option>Recovery</option></select></div>
+    <div class="field"><label>Duration (minutes)</label><input id="wDuration" type="number" min="5" max="300" value="45" required></div>
+    <div class="field full"><button class="btn" type="submit">＋ Add to my plan</button></div>
+   </form>
+  </section>
+ </main>
+ <aside>
+  <section class="panel">
+   <div class="panel-head"><h3>Daily habits</h3><span class="hint">Small wins add up</span></div>
+   <div class="progress-row"><b>Water intake</b><span id="waterLabel">0 of 8 glasses</span></div><div class="bar"><span id="waterBar" style="width:0%"></span></div>
+   <div class="water" id="waterButtons"></div>
+   <form id="goalForm" class="goal-form">
+    <label for="goalInput">Weekly workout goal (sessions)</label>
+    <div><input id="goalInput" type="number" min="1" max="21" required><button class="btn secondary small" type="submit">Update target</button></div>
+   </form>
+   <div class="progress-row"><b>This week's progress</b><span id="goalLabel">0 / 4 sessions</span></div><div class="bar"><span id="goalBar" style="width:0%"></span></div>
+  </section>
+  <section class="panel">
+   <div class="panel-head"><h3>Track your progress</h3><span class="hint">Weight log</span></div>
+   <form id="weightForm" class="form-grid">
+    <div class="field"><label>Weight (kg)</label><input id="weightInput" type="number" min="1" max="500" step=".1" placeholder="e.g. 72.5" required></div>
+    <div class="field"><label>Date</label><input id="weightDate" type="date" required></div>
+    <div class="field full"><button class="btn secondary" type="submit">Save weight entry</button></div>
+   </form>
+   <div id="weightHistory" style="margin-top:13px"></div>
+  </section>
+  <section class="panel">
+   <div class="panel-head"><h3>Exercise notes</h3><span class="hint">Keep your focus</span></div>
+   <div class="field"><textarea id="notes" placeholder="Write your goals, personal records or reminders..."></textarea></div>
+   <button class="btn secondary small" style="margin-top:9px" onclick="saveNotes()">Save notes</button><span id="notesSaved" class="hint" style="margin-left:8px"></span>
+  </section>
+ </aside>
+</div>
+<dialog id="dayDialog" class="day-dialog" aria-labelledby="dayDialogTitle">
+ <div class="panel-head"><h3 id="dayDialogTitle"></h3><button class="remove" id="closeDayDialog" type="button" aria-label="Close activity details">×</button></div>
+ <div id="dayActivity"></div>
+</dialog>
+<div class="footer">FITTRACK GYM PLANNER · Your plan, your pace, your progress.</div>
+</div>
+<script>
+  const $=id=>document.getElementById(id);
+const today=new Date();
+const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const shortDays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const key='fittrack-gym-planner-v1';
+let data={workouts:[],water:{},weights:[],notes:'',goal:4,completed:{}};
+try{
+ data={...data,...JSON.parse(localStorage.getItem(key)||'{}')};
+}catch(error){
+ console.error('Unable to load saved FitTrack data.',error);
+}
+data.workouts=Array.isArray(data.workouts)?data.workouts:[];
+data.weights=Array.isArray(data.weights)?data.weights:[];
+data.water=data.water&&typeof data.water==='object'?data.water:{};
+data.completed=data.completed&&typeof data.completed==='object'?data.completed:{};
+Object.keys(data.completed).forEach(date=>{if(!Array.isArray(data.completed[date]))delete data.completed[date]});
+data.goal=Number.isInteger(Number(data.goal))&&Number(data.goal)>=1&&Number(data.goal)<=21?Number(data.goal):4;
+data.workouts.forEach(workout=>{if(!workout.id)workout.id=createWorkoutId()});
+
+function createWorkoutId(){return `workout-${Date.now()}-${Math.random().toString(36).slice(2)}`}
+function save(){localStorage.setItem(key,JSON.stringify(data))}
+function dateKey(date=new Date()){
+ const year=date.getFullYear();
+ const month=String(date.getMonth()+1).padStart(2,'0');
+ const day=String(date.getDate()).padStart(2,'0');
+ return `${year}-${month}-${day}`;
+}
+$('todayDate').textContent=today.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+$('weightDate').value=dateKey();
+$('wDay').value=dayNames[today.getDay()];
+$('goalInput').value=data.goal;
+
+function renderWeek(){
+ const start=new Date(today);start.setDate(today.getDate()-((today.getDay()+6)%7));
+ $('weekDays').innerHTML='';
+ ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].forEach((name,i)=>{
+  const date=new Date(start);date.setDate(start.getDate()+i);
+  const hasWorkout=data.workouts.some(workout=>workout.day===name);
+  const dayButton=document.createElement('button');
+  dayButton.type='button';
+  dayButton.className='day'+(date.toDateString()===today.toDateString()?' active':'');
+  dayButton.setAttribute('aria-label',`View ${name}, ${date.toLocaleDateString(undefined,{month:'long',day:'numeric'})} activity`);
+  dayButton.innerHTML=`<span>${shortDays[date.getDay()]}</span><b>${date.getDate()}</b>${hasWorkout?'<i></i>':''}`;
+  dayButton.addEventListener('click',()=>showDayActivity(date));
+  $('weekDays').appendChild(dayButton);
+ });
+}
+function renderWorkouts(){
+ const list=$('workoutList');list.innerHTML='';
+ const ordered=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+ const items=[...data.workouts].sort((a,b)=>ordered.indexOf(a.day)-ordered.indexOf(b.day));
+ if(!items.length){list.innerHTML='<div class="empty">No workouts planned yet. Add your first session below.</div>'}
+ items.forEach((workout)=>{
+  const index=data.workouts.indexOf(workout);const el=document.createElement('div');el.className='workout';
+  const icons={Strength:'🏋️',Cardio:'🏃',Flexibility:'🧘',Core:'🔥','Full body':'💪',Recovery:'🌿'};
+  el.innerHTML=`<div class="workout-color">${icons[workout.type]||'💪'}</div><div class="workout-info"><b>${escapeHtml(workout.name)}</b><span><select class="workout-day" aria-label="Schedule ${escapeHtml(workout.name)} for a day">${ordered.map(day=>`<option value="${day}"${workout.day===day?' selected':''}>${day}</option>`).join('')}</select> · ${Number(workout.duration)} min · ${escapeHtml(workout.type)}</span></div><span class="tag">${escapeHtml(workout.type)}</span><button class="remove" title="Remove workout" aria-label="Remove ${escapeHtml(workout.name)}" type="button">×</button>`;
+  el.querySelector('.remove').addEventListener('click',()=>removeWorkout(index));
+  el.querySelector('.workout-day').addEventListener('change',event=>{data.workouts[index].day=event.target.value;save();renderAll()});
+  list.appendChild(el);
+ });
+ const plannedCount=data.workouts.length;
+ $('workoutCount').textContent=plannedCount;
+ $('goalCount').textContent=data.goal;
+ $('goalLabel').textContent=`${plannedCount} / ${data.goal} sessions`;
+ $('goalBar').style.width=Math.min(100,plannedCount/data.goal*100)+'%';
+}
+function removeWorkout(index){
+ const [removed]=data.workouts.splice(index,1);
+ if(removed){
+  Object.keys(data.completed).forEach(date=>{
+   data.completed[date]=data.completed[date].filter(id=>id!==removed.id);
+  });
+ }
+ save();renderAll();
+}
+function renderWater(){
+ const n=data.water[dateKey()]||0;$('waterCount').textContent=n+'/8';$('waterLabel').textContent=`${n} of 8 glasses`;$('waterBar').style.width=n/8*100+'%';
+ $('waterButtons').innerHTML='';
+ for(let i=0;i<8;i++){const b=document.createElement('button');b.className='glass'+(i<n?' filled':'');b.textContent='💧';b.setAttribute('aria-label',`Set water to ${i+1} glasses`);b.onclick=()=>{data.water[dateKey()]=i+1;save();renderWater()};$('waterButtons').appendChild(b)}
+}
+function renderWeights(){
+ const latest=[...data.weights].sort((a,b)=>b.date.localeCompare(a.date))[0];
+ $('weightDisplay').textContent=latest?latest.value+' kg':'—';
+ const box=$('weightHistory');box.innerHTML='';
+ const recent=[...data.weights].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+ if(!recent.length){box.innerHTML='<div class="empty">Your saved weight entries will appear here.</div>';return}
+ recent.forEach(entry=>{const row=document.createElement('div');row.className='progress-row';row.innerHTML=`<span>${new Date(entry.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</span><b>${escapeHtml(entry.value)} kg</b>`;box.appendChild(row)})
+}
+function showDayActivity(date){
+ const dayName=dayNames[date.getDay()];
+ const selectedDate=dateKey(date);
+ $('dayDialogTitle').textContent=`${dayName}, ${date.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})}`;
+ const activity=$('dayActivity');
+ const scheduled=data.workouts.filter(workout=>workout.day===dayName);
+ const completed=new Set(data.completed[selectedDate]||[]);
+ const workoutsHtml=scheduled.length?scheduled.map(workout=>`
+  <label class="activity-workout">
+   <input type="checkbox" data-workout-id="${escapeHtml(workout.id)}"${completed.has(workout.id)?' checked':''}>
+   <span><b>${escapeHtml(workout.name)}</b><small>${escapeHtml(workout.type)} · ${Number(workout.duration)} min</small></span>
+   <strong>${completed.has(workout.id)?'Completed':'Planned'}</strong>
+  </label>`).join(''):`<p class="activity-empty">No workouts planned for ${escapeHtml(dayName)}.</p>`;
+ const water=Number(data.water[selectedDate]||0);
+ const weights=data.weights.filter(entry=>entry.date===selectedDate);
+ const weightsHtml=weights.length?weights.map(entry=>`<li>${escapeHtml(entry.value)} kg</li>`).join(''):'<li>No weight entry recorded.</li>';
+ activity.innerHTML=`
+  <section class="activity-section"><h4>Workouts</h4>${workoutsHtml}${scheduled.length?'<p class="activity-hint">Mark a session complete to add it to your daily activity log.</p>':''}</section>
+  <section class="activity-section"><h4>Water</h4><p>${water} of 8 glasses recorded</p></section>
+  <section class="activity-section"><h4>Weight entries</h4><ul>${weightsHtml}</ul></section>`;
+ activity.querySelectorAll('[data-workout-id]').forEach(checkbox=>{
+  checkbox.addEventListener('change',()=>{
+   const ids=new Set(data.completed[selectedDate]||[]);
+   if(checkbox.checked)ids.add(checkbox.dataset.workoutId);
+   else ids.delete(checkbox.dataset.workoutId);
+   data.completed[selectedDate]=[...ids];
+   save();renderWorkouts();renderWeek();showDayActivity(date);
+  });
+ });
+ if(!$('dayDialog').open)$('dayDialog').showModal();
+}
+function renderAll(){renderWeek();renderWorkouts();renderWater();renderWeights()}
+$('workoutForm').addEventListener('submit',e=>{e.preventDefault();data.workouts.push({id:createWorkoutId(),name:$('wName').value.trim(),day:$('wDay').value,type:$('wType').value,duration:Number($('wDuration').value)});save();e.target.reset();$('wDay').value=dayNames[today.getDay()];$('wDuration').value=45;renderAll()});
+$('goalForm').addEventListener('submit',e=>{e.preventDefault();data.goal=Number($('goalInput').value);save();renderWorkouts()});
+$('weightForm').addEventListener('submit',e=>{e.preventDefault();data.weights.push({value:Number($('weightInput').value),date:$('weightDate').value});save();$('weightInput').value='';renderWeights()});
+$('notes').value=data.notes||'';
+function saveNotes(){data.notes=$('notes').value;save();$('notesSaved').textContent='Saved ✓';setTimeout(()=>$('notesSaved').textContent='',1800)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('closeDayDialog').addEventListener('click',()=>$('dayDialog').close());
+$('dayDialog').addEventListener('click',event=>{if(event.target===$('dayDialog'))$('dayDialog').close()});
+renderAll();
+
+</script>
+</body>
+</html>
